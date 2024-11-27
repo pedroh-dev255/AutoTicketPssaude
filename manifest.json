@@ -1,0 +1,22 @@
+{
+    "manifest_version": 3,
+    "name": "Atendimento Automático",
+    "version": "1.0",
+    "description": "Aceita automaticamente o atendimento quando há um novo atendimento disponível.",
+    "permissions": [
+      "activeTab",
+      "storage"
+    ],
+    "background": {
+      "service_worker": "background.js"
+    },
+    "content_scripts": [
+      {
+        "matches": ["https://www.pssaude.com.br/*"],
+        "js": ["content.js"]
+      }
+    ],
+    "icons": {
+      "128": "icon.png"
+    }
+}
