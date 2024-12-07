@@ -85,6 +85,7 @@ function toggleFunction(event) {
     } else {
         console.log("Verificação desativada.");
         stopVerifying(); // Parar a verificação
+        stopInactivityTimer();
     }
 }
 
@@ -106,6 +107,38 @@ function aceitarConversa() {
         botaoAceitar.click(); // Clica no botão "Atender o próximo"
     }
 }
+
+let inactivityTimeout;
+
+function startInactivityTimer(switchInput) {
+    stopInactivityTimer(); // Reseta o timer atual
+    inactivityTimeout = setTimeout(() => {
+        stopInactivityTimer();
+        console.log("Switch desativado automaticamente devido à inatividade.");
+
+        if (switchInput) {
+            switchInput.checked = false; // Desmarca o switch
+            switchInput.dispatchEvent(new Event('change')); // Dispara o evento 'change'
+        }
+    }, 30000); // 30 segundos
+}
+
+function stopInactivityTimer() {
+    clearTimeout(inactivityTimeout);
+}
+
+function resetInactivityTimer() {
+    const switchInput = document.querySelector('input[type="checkbox"]');
+    if (switchInput && switchInput.checked) {
+        startInactivityTimer(switchInput);
+    }
+}
+
+
+['mousemove', 'keydown', 'click'].forEach(event => {
+    document.addEventListener(event, resetInactivityTimer);
+});
+
 
 // Função para iniciar a verificação
 function startVerifying() {
