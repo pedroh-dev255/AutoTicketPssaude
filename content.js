@@ -18,6 +18,26 @@ function createFloatingButton() {
     icon.style.marginBottom = '10px';
     container.appendChild(icon);
 
+    // Checkbox para o Timer
+    const timerContainer = document.createElement('div');
+    timerContainer.style.display = 'flex';
+    timerContainer.style.alignItems = 'center';
+    timerContainer.style.marginBottom = '10px';
+
+    const timerCheckbox = document.createElement('input');
+    timerCheckbox.type = 'checkbox';
+    timerCheckbox.id = 'timerCheckbox';
+
+    const timerLabel = document.createElement('label');
+    timerLabel.for = 'timerCheckbox';
+    timerLabel.innerText = 'Timer';
+    timerLabel.style.marginLeft = '5px';
+    timerLabel.style.fontSize = '14px';
+    
+    timerContainer.appendChild(timerCheckbox);
+    timerContainer.appendChild(timerLabel);
+    container.appendChild(timerContainer);
+
     // Switch estilizado na parte inferior
     const switchLabel = document.createElement('label');
     switchLabel.style.display = 'block';
@@ -56,10 +76,16 @@ function createFloatingButton() {
             slider.style.backgroundColor = '#4CAF50';
             sliderCircle.style.transform = 'translateX(26px)';
             startVerifying(); // Iniciar a verificação
+
+            // Ativar timer se o checkbox estiver marcado
+            if (timerCheckbox.checked) {
+                startInactivityTimer();
+            }
         } else {
             slider.style.backgroundColor = '#ccc';
             sliderCircle.style.transform = 'translateX(0)';
             stopVerifying(); // Parar a verificação
+            stopInactivityTimer();
         }
     });
 
@@ -110,12 +136,13 @@ function aceitarConversa() {
 
 let inactivityTimeout;
 
-function startInactivityTimer(switchInput) {
+function startInactivityTimer() {
     stopInactivityTimer(); // Reseta o timer atual
     inactivityTimeout = setTimeout(() => {
         stopInactivityTimer();
         console.log("Switch desativado automaticamente devido à inatividade.");
 
+        const switchInput = document.querySelector('input[type="checkbox"]:not(#timerCheckbox)');
         if (switchInput) {
             switchInput.checked = false; // Desmarca o switch
             switchInput.dispatchEvent(new Event('change')); // Dispara o evento 'change'
@@ -128,17 +155,16 @@ function stopInactivityTimer() {
 }
 
 function resetInactivityTimer() {
-    const switchInput = document.querySelector('input[type="checkbox"]');
-    if (switchInput && switchInput.checked) {
-        startInactivityTimer(switchInput);
+    const switchInput = document.querySelector('input[type="checkbox"]:not(#timerCheckbox)');
+    const timerCheckbox = document.getElementById('timerCheckbox');
+    if (switchInput && switchInput.checked && timerCheckbox && timerCheckbox.checked) {
+        startInactivityTimer();
     }
 }
-
 
 ['mousemove', 'keydown', 'click'].forEach(event => {
     document.addEventListener(event, resetInactivityTimer);
 });
-
 
 // Função para iniciar a verificação
 function startVerifying() {
